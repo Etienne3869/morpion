@@ -1,10 +1,11 @@
 require 'bundler'
-require "pry"
 Bundler.require
 
-require_relative 'lib/Player'
-require_relative 'lib/Game'
+$:.unshift File.expand_path("./../lib", __FILE__)
+require 'app/game'
+require 'app/player'
+require 'app/board'
+require 'app/board_case'
+require 'views/show'
 
-
-
-binding.pry 
+Game.new.perform
