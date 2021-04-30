@@ -1,91 +1,73 @@
 class Board
-
-    attr_accessor :array_cases, :choose_case, :game_state_variable, :game_nil_variable
+  require 'pry'
+  attr_accessor :board
+  
+    board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
   
     def initialize
-      # Initialize all 9 BoardCase
-      @A1 = BoardCase.new("a1", " ")
-      @A2 = BoardCase.new("a2", " ")
-      @A3 = BoardCase.new("a3", " ")
-      @B1 = BoardCase.new("b1", " ")
-      @B2 = BoardCase.new("b2", " ")
-      @B3 = BoardCase.new("b3", " ")
-      @C1 = BoardCase.new("c1", " ")
-      @C2 = BoardCase.new("c2", " ")
-      @C3 = BoardCase.new("c3", " ")
-  
-      @game_state_variable = false
-  
-      @game_nil_variable = false
-  
-      @array_cases = [@A1, @A2, @A3, @B1, @B2, @B3, @C1, @C2, @C3]
-  
     end
   
-    # Function that write user symbol in the case choose by current user
-    def write_on_case (case_choose, player_symbol)
-      @array_cases.map { |item| item.position == case_choose ? item.content = player_symbol  : item }
+    def self.display_board(the_board)
+      puts ("  #{the_board[0]} | #{the_board[1]}  | #{the_board[2]}  ").center(150)
+      puts ("-----------").center(150)
+      puts ("  #{the_board[3]} | #{the_board[4]}  | #{the_board[5]}  ").center(150)
+      puts ("-----------").center(150)
+      puts ("  #{the_board[6]} | #{the_board[7]}  | #{the_board[8]}  ").center(150)
     end
   
-    # This function verify each win possibilities and get the game_state_variable at true if find any
-    def game_state
-  
-      if @A1.content == "o" && @A2.content == "o" && @A3.content == "o" || @A1.content == "x" && @A2.content == "x" && @A3.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test la 2ème ligne
-      if @B1.content == "o" && @B2.content == "o" && @B3.content == "o" || @B1.content == "x" && @B2.content == "x" && @B3.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test la 3eme ligne
-      if @C1.content == "o" && @C2.content == "o" && @C3.content == "o" || @C1.content == "x" && @C2.content == "x" && @C3.content == "x"
-      @game_state_variable = true
-      end
-  
-      # On test la première colone
-      if @A1.content == "o" && @B1.content == "o" && @C1.content == "o" || @A1.content == "x" && @B1.content == "x" && @C1.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test le deuxième colone
-      if @A2.content == "o" && @B2.content == "o" && @C2.content == "o" || @A2.content == "x" && @B2.content == "x" && @C2.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test la 3eme colone
-      if @A3.content == "o" && @B3.content == "o" && @C3.content == "o" || @A3.content == "x" && @B3.content == "x" && @C3.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test la dagonale gauche
-      if @A1.content == "o" && @B2.content == "o" && @C3.content == "o" || @A1.content == "x" && @B2.content == "x" && @C3.content == "x"
-       @game_state_variable = true
-      end
-  
-      # On test la diagonle droite
-      if @A3.content == "o" && @B2.content == "o" && @C1.content == "o" || @A3.content == "x" && @B2.content == "x" && @C1.content == "x"
-       @game_state_variable = true
-      end
-  
+    def board_presentation(board)
+      board[0] = "A1"
+      board[1] = "A2"
+      board[2] = "A3"
+      board[3] = "B1"
+      board[4] = "B2"
+      board[5] = "B3"
+      board[6] = "C1"
+      board[7] = "C2"
+      board[8] = "C3"
     end
   
-    # Methode that verify if the board is full of "x" and "o" to stop the game as null game
-    # !!! This methode is not finish
-    def game_nil
-      @array_cases.each { |item| item.content == /[:SPACE:]/ ? @game_nil_variable = true : @game_nil_variable = false }
+    def add_symbol_2(player_turn, board)
+      if player_turn == "A1"
+        board[0] = "X"
+      elsif player_turn == "A2"
+        board[1] = "X"
+      elsif player_turn == "A3"
+        board[2] = "X"
+      elsif player_turn == "B1"
+        board[3] = "X"
+      elsif player_turn == "B2"
+        board[4] = "X"
+      elsif player_turn == "B3"
+        board[5] = "X"
+      elsif player_turn == "C1"
+        board[6] = "X"
+      elsif player_turn == "C2"
+        board[7] = "X"
+      elsif player_turn == "C3"
+        board[8] = "X"
+      end
     end
   
-    # This is a view game. Normaly should be in a view class
-    def show_board
-      # Show empty board at initialization and get variable at each player turn
-      puts "   1   2  3"
-      puts " a #{@A1.content} | #{@A2.content} | #{@A3.content}"
-      puts "   ---------"
-      puts " b #{@B1.content} | #{@B2.content} | #{@B3.content}"
-      puts "   ---------"
-      puts " c #{@C1.content} | #{@C2.content} | #{@C3.content}"
-  
+    def add_symbol_1(player_turn, board)
+      if player_turn == "A1"
+        board[0] = "O"
+      elsif player_turn == "A2"
+        board[1] = "O"
+      elsif player_turn == "A3"
+        board[2] = "O"
+      elsif player_turn == "B1"
+        board[3] = "O"
+      elsif player_turn == "B2"
+        board[4] = "O"
+      elsif player_turn == "B3"
+        board[5] = "O"
+      elsif player_turn == "C1"
+        board[6] = "O"
+      elsif player_turn == "C2"
+        board[7] = "O"
+      elsif player_turn == "C3"
+        board[8] = "O"
+      end
     end
   end

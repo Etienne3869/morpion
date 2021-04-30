@@ -1,71 +1,137 @@
 class Game
 
-    attr_accessor :players, :board
-  
-    def initialize
-      @players = []
-      @board = Board.new
-    end
-  
-    # Function that ask the 2 players name
-    def ask_name
-      puts "Nom du player 1 ?"
-      print "> "
-      @players << Player.new(gets.chomp.to_s, "o")
-  
-      puts "Nom du player 2 ?"
-      print "> "
-      @players << Player.new(gets.chomp.to_s, "x")
-    end
-  
-    # Function that make play players one by one
-    def select_player
-      while @board.game_state_variable == false
-        @players.each { |item| choose_case(item) }
-      end
-    end
-  
-    # As the case the user wants to play and return symbol into the case in the selected case
-    def choose_case (player)
-      # If a player win
-      if @board.game_state_variable == true
-        puts "Bravo #{player.name}!! Tu as gagné !!"
-      # If the game is null
-      elsif @board.game_nil_variable == true
-        puts "la partie est finie, partie nul!!"
-      # When the game is runing
-      else
-        puts "#{player.name} avec le symbole '#{player.symbol}' à toi de jouer entre la case que tu souhaites. Exemple : a1, b2, c3..."
-        print "> "
-        @board.write_on_case(gets.chomp.to_s, player.symbol)
-        @board.show_board
-        @board.game_state
-      end
-    end
-  
-    # Ask if the user want to play an other game
-    # !!! This is not working properly because variable keep value from the last game
-    def ask_new_game
-      puts "Tape rejouer si tu veux 'rejouer' au morpion ! Ou n'import quel charactère pour sortir "
-      print "> "
-      new_game = gets.chomp.to_s
-  
-      if new_game == "rejouer"
-        # Put back the array all blank
-        @board.array_cases.map! { |item| item.content = " " }
-        # call the self perform to play again
-        self.perform
-      end
-    end
-  
-    def perform
-      ask_name
-      puts "Le nom du joueur 1 est #{@players[0].name} et son symbole est #{@players[0].symbol}"
-      puts "Le nom du joueur 2 est #{@players[1].name} et son symbole est #{@players[1].symbol}"
-      # Show empty board before playing
-      @board.show_board
-      select_player
-      ask_new_game
-    end
+  attr_accessor :player_1_moves, :player_2_moves, :player_1_name, :player_2_name, :player_1, :player_2, :moves_possible
+
+    #Scénario intro
+  def introduction
+    puts "- Let's fight !"
+    puts ""
+    puts "- But at first, what are the names of our two fighters ?"
+    puts ""
+    puts "- Player 1 ?"
+    print "> "
+    player_1_name = gets.chomp.to_s
+    puts ""
+    puts "- Player 2 ?"
+    print "> "
+    player_2_name = gets.chomp.to_s
+    puts ""
+    puts "- Okay !"
+    puts "- You are now ready to fight, #{player_1_name} and #{player_2_name}"    
+    beginning_of_the_fight(player_1_name, player_2_name, player_1, player_2)
+  end
+    
+  # Scénario pré-fight
+  def beginning_of_the_fight(player_1_name, player_2_name, player_1, player_2)
+    player_1 = Player.new(player_1_name)
+    player_2 = Player.new(player_2_name)
+    puts "Leeeeeet's fiiiiiight !!!!"
+    puts ""
+    puts "- Wait wait wait wait !"
+    puts ""
+    puts "- We have to decide who will be the one playing first !"
+    puts ""
+    puts "- Let's the dice of destiny decides..."
+    puts "- If it is 1, #{player_1_name} will be the first one to play. If it is 2, #{player_2_name} will start the fight !"
+    puts "- Spirit of the dice, give me your spiritual power to roll the dice"
+    puts ""
+    puts "(The dice is tossed, it is magical)"
+    puts "Wooooooooooouch... ploc ploc ploc !"
+    dice_of_destiny = rand(1..2)
+    puts ""
+    puts "The dice of destiny made a #{dice_of_destiny}"
+    puts ""
+    fight(dice_of_destiny, player_1_name, player_2_name, player_1, player_2)
   end
 
+  #Fight sa mère
+  def continue?
+    puts
+    puts "------->  Entrée pour continuer  <---------"
+    gets
+    puts
+  end
+
+  def fight(dice_of_destiny, player_1_name, player_2_name, player_1, player_2)
+    my_board = Board.new
+    board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+    moves_possible = ["A1" , "A2" , "A3" , "B1" , "B2" , "B3" , "C1" , "C2" , "C3"]
+    
+    if dice_of_destiny == 2
+      puts my_board.board_presentation(board)
+      puts "The player who will start the fight is #{player_2_name}"
+      puts "What is your move ?"
+      my_board.add_symbol_2(player_2.player_turn(moves_possible), board)
+      Board.display_board(board) 
+    else
+      puts "#{player_1_name} will start the fight"
+      puts my_board.board_presentation(board)
+    end
+
+      victory = 0
+
+      while       
+        victory = player_2.victory_condition(victory)
+          if victory == 1
+            puts "#{player_2_name} is the big winner !"
+            break        
+          end
+        continue?
+        puts "#{player_1_name}, c'est à votre tour !"
+        my_board.add_symbol_1(player_1.player_turn(moves_possible), board)      
+        Board.display_board(board)
+        empty_moves = moves_possible.empty?
+          if empty_moves == true
+            puts "What a game, it is an even game !!"
+            break
+          end 
+        victory = player_1.victory_condition(victory)
+          if victory == 1
+            puts "#{player_2_name} is the big winner !"
+            break
+          end
+        continue?
+        puts "#{player_2_name}, c'est à votre tour !"
+        my_board.add_symbol_2(player_2.player_turn(moves_possible), board)
+        Board.display_board(board)
+          empty_moves = moves_possible.empty?
+          if empty_moves == true
+            puts "What a game, it is an even game !!"
+            break
+          end 
+      end
+      end_of_fight(dice_of_destiny, player_1_name, player_2_name, player_1, player_2)
+    end
+
+    def end_of_fight(dice_of_destiny, player_1_name, player_2_name, player_1, player_2)
+      puts "1- Do you want a rematch with the same participants ?"
+      puts "2- Or do you prefer to make the rematch with new participants ?"
+      puts "3- You can also leave but you would be big cowards..."
+      puts ""
+      puts "What do you decide ?"
+      print "> "
+      sophies_choice = gets.chomp.to_i
+      possible_choices = [1, 2, 3]
+      while
+        correct_choice = possible_choices.include?(sophies_choice)
+        if correct_choice == true
+          break
+        end
+        puts "You miss this easy task, retry !"
+      end
+
+      if sophies_choice == 1
+        beginning_of_the_fight(player_1_name, player_2_name, player_1, player_2)
+      end
+      if sophies_choice == 2
+        introduction
+      end
+      if sophies_choice == 3
+        exit
+      end
+
+    end
+
+    def initialize
+    end
+end
